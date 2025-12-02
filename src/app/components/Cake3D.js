@@ -18,8 +18,8 @@ function CakeModel({ candlesOn, modelRef, flameRefs }) {
   });
 
   useEffect(() => {
-    scene.scale.set(25, 25, 25);
-    scene.position.set(0, -0.5, 0);
+    scene.scale.set(60, 60, 60);
+    scene.position.set(0, -1.5, 0);
   }, [scene]);
 
   useEffect(() => {
@@ -61,56 +61,10 @@ function CakeModel({ candlesOn, modelRef, flameRefs }) {
 }
 
 // -------------------------------
-// Smoke Component
-// -------------------------------
-function Smoke({ active }) {
-  const ref = useRef();
-
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-
-    if (active) {
-      ref.current.material.opacity = Math.min(
-        1,
-        ref.current.material.opacity + delta * 1.3
-      );
-      ref.current.position.y += delta * 0.18;
-      ref.current.scale.x += delta * 0.3;
-      ref.current.scale.y += delta * 0.3;
-    } else {
-      ref.current.material.opacity = Math.max(
-        0,
-        ref.current.material.opacity - delta * 1.5
-      );
-      ref.current.position.y = THREE.MathUtils.lerp(
-        ref.current.position.y,
-        1.2,
-        0.12
-      );
-      ref.current.scale.lerp(new THREE.Vector3(0.6, 0.6, 0.6), 0.15);
-    }
-  });
-
-  return (
-    <mesh ref={ref} position={[0, 1.2, 0]} rotation={[-Math.PI / 4.8, 0, 0]}>
-      <planeGeometry args={[0.8, 0.8]} />
-      <meshBasicMaterial
-        transparent
-        opacity={0}
-        depthWrite={false}
-        side={THREE.DoubleSide}
-        color="black"
-      />
-    </mesh>
-  );
-}
-
-// -------------------------------
 // MAIN COMPONENT
 // -------------------------------
 export default function Cake3D() {
   const [candlesOn, setCandlesOn] = useState(true);
-  const [smokeActive, setSmokeActive] = useState(false);
 
   const modelRef = useRef(null);
   const flameRefs = useRef([]);
@@ -172,8 +126,6 @@ export default function Cake3D() {
               lastTrigger = now;
               console.log("Blow detected! Turning off candles");
               setCandlesOn(false);
-              setSmokeActive(true);
-              setTimeout(() => setSmokeActive(false), 2500);
               blowFrames = 0;
             }
 
@@ -220,7 +172,6 @@ export default function Cake3D() {
             modelRef={modelRef}
             flameRefs={flameRefs}
           />
-          <Smoke active={smokeActive} />
         </React.Suspense>
 
         <OrbitControls enableZoom={false} />
