@@ -1,147 +1,209 @@
 "use client";
 
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Html } from "@react-three/drei";
-import { useRef, useState, useEffect, Suspense } from "react";
 import * as THREE from "three";
 
-function CakeModel({ candlesOn }) {
-  const gltf = useGLTF("/models/cake.glb");
-  const scene = gltf.scene;
-  const fireMeshes = [];
+// -------------------------------
+// Cake Model Component
+// -------------------------------
+function CakeModel({ candlesOn, modelRef, flameRefs }) {
+  const { scene } = useGLTF("/models/cake.glb");
 
-  // Resize and position cake
-  scene.scale.set(2.5, 2.5, 2.5);
-  scene.position.set(0, -1, 0);
-
-  // Detect flames
-  scene.traverse((child) => {
-    if (child.isMesh) {
-      console.log("Mesh:", child.name);
-      if (child.name.includes("fire")) {
-        fireMeshes.push(child);
-      }
+  // Rotate cake every frame
+  useFrame(() => {
+    if (modelRef.current) {
+      modelRef.current.rotation.y += 0.0035; // adjust speed
     }
   });
 
-  // Toggle flames based on candlesOn state
-  fireMeshes.forEach((mesh) => {
-    mesh.visible = candlesOn;
-  });
+  // Transform setup (run once)
+  useEffect(() => {
+    scene.scale.set(25, 25, 25); // scale up the model
+    scene.position.set(0, -0.5, 0); // lift it a little above ground
+  }, [scene]);
 
-  return <primitive object={scene} />;
+  // Detect flame meshes once
+  useEffect(() => {
+    const flames = [];
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        const name = (child.name || "").toLowerCase();
+        if (name.includes("fire") || name.includes("flame")) {
+          flames.push(child);
+        }
+      }
+    });
+
+    flameRefs.current = flames;
+    flames.forEach((m) => (m.visible = candlesOn));
+
+    console.log(
+      "🔥 Flames detected:",
+      flames.map((f) => f.name)
+    );
+  }, [scene]);
+
+  // Update visibility on candlesOn changes
+  useEffect(() => {
+    const flames = flameRefs.current || [];
+    flames.forEach((m) => (m.visible = candlesOn));
+  }, [candlesOn]);
+
+  return <primitive ref={modelRef} object={scene} />;
 }
 
+// -------------------------------
+// Smoke Component
+// -------------------------------
+function Smoke({ active }) {
+  const ref = useRef();
+
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+
+    if (active) {
+      ref.current.material.opacity = Math.min(
+        1,
+        ref.current.material.opacity + delta * 1.3
+      );
+      ref.current.position.y += delta * 0.18;
+      ref.current.scale.x += delta * 0.3;
+      ref.current.scale.y += delta * 0.3;
+    } else {
+      ref.current.material.opacity = Math.max(
+        0,
+        ref.current.material.opacity - delta * 1.5
+      );
+      ref.current.position.y = THREE.MathUtils.lerp(
+        ref.current.position.y,
+        1.2,
+        0.12
+      );
+      ref.current.scale.lerp(new THREE.Vector3(0.6, 0.6, 0.6), 0.15);
+    }
+  });
+
+  return (
+    <mesh ref={ref} position={[0, 1.2, 0]} rotation={[-Math.PI / 4.8, 0, 0]}>
+      <planeGeometry args={[0.8, 0.8]} />
+      <meshBasicMaterial
+        transparent
+        opacity={0}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        color="black"
+      />
+    </mesh>
+  );
+}
+
+// -------------------------------
+// MAIN COMPONENT
+// -------------------------------
 export default function Cake3D() {
   const [candlesOn, setCandlesOn] = useState(true);
   const [smokeActive, setSmokeActive] = useState(false);
 
-  // Microphone blow detection
-  useEffect(() => {
-    let audioContext;
-    let analyser;
-    let rafId;
-    let source;
+  const modelRef = useRef(null);
+  const flameRefs = useRef([]);
 
-    async function initMic() {
+  const audioCtxRef = useRef(null);
+  const analyserRef = useRef(null);
+  const streamRef = useRef(null);
+  const rafRef = useRef(null);
+
+  // -------------------------------
+  // Microphone Blow Detection
+  // -------------------------------
+  useEffect(() => {
+    const threshold = 0.02; // sensitivity
+    let lastTrigger = 0;
+
+    async function enableMic() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
+        streamRef.current = stream;
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        audioCtxRef.current = audioCtx;
+
+        const analyser = audioCtx.createAnalyser();
         analyser.fftSize = 2048;
-        source = audioContext.createMediaStreamSource(stream);
-        source.connect(analyser);
+        analyserRef.current = analyser;
+
+        const src = audioCtx.createMediaStreamSource(stream);
+        src.connect(analyser);
+
         const data = new Float32Array(analyser.fftSize);
 
-        let lastTrigger = 0;
-
-        const check = () => {
+        const tick = () => {
           analyser.getFloatTimeDomainData(data);
           let sum = 0;
           for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
           const rms = Math.sqrt(sum / data.length);
-          const threshold = 0.06;
           const now = Date.now();
 
-          if (rms > threshold && now - lastTrigger > 800 && candlesOn) {
+          if (rms > threshold && now - lastTrigger > 700 && candlesOn) {
             lastTrigger = now;
-            console.log("Blow detected!");
-            setCandlesOn(false);
-            setSmokeActive(true);
+            setCandlesOn(false); // turn off flames
+            setSmokeActive(true); // show smoke
             setTimeout(() => setSmokeActive(false), 2500);
-
-            // Stop microphone after blow detected
-            stream.getTracks().forEach((t) => t.stop());
-            return;
           }
 
-          rafId = requestAnimationFrame(check);
+          rafRef.current = requestAnimationFrame(tick);
         };
 
-        rafId = requestAnimationFrame(check);
-      } catch (err) {
-        console.warn("Microphone error:", err);
+        rafRef.current = requestAnimationFrame(tick);
+      } catch (e) {
+        console.warn("Microphone error:", e);
       }
     }
 
-    initMic();
+    if (candlesOn) enableMic();
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      if (audioContext) audioContext.close();
-      if (source && source.mediaStream)
-        source.mediaStream.getTracks().forEach((t) => t.stop());
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => {});
+        audioCtxRef.current = null;
+      }
     };
   }, [candlesOn]);
 
-  // Simple smoke effect above cake
-  function Smoke() {
-    const ref = useRef();
-    useFrame((state, delta) => {
-      if (!ref.current) return;
-      if (smokeActive) {
-        ref.current.material.opacity = Math.max(
-          0,
-          ref.current.material.opacity - delta * 0.3
-        );
-        ref.current.scale.x += delta * 0.8;
-        ref.current.scale.y += delta * 0.8;
-      } else {
-        ref.current.material.opacity = 0;
-        ref.current.scale.set(0.5, 0.5, 0.5);
-      }
-    });
-    return (
-      <mesh ref={ref} position={[0, 1.2, 0]}>
-        <planeGeometry args={[0.6, 0.6]} />
-        <meshBasicMaterial
-          transparent
-          opacity={0}
-          depthWrite={false}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    );
-  }
-
+  // -------------------------------
+  // Render
+  // -------------------------------
   return (
-    <div className="w-full h-[500px]">
+    <div className="w-full h-[520px]">
       <Canvas camera={{ position: [0, 2, 6], fov: 45 }}>
-        <ambientLight intensity={1.3} />
-        <directionalLight intensity={2} position={[3, 5, 3]} />
-        <Suspense
+        <ambientLight intensity={1.2} />
+        <directionalLight intensity={1.8} position={[3, 6, 3]} />
+
+        <React.Suspense
           fallback={
             <Html center>
               <div className="text-white">در حال بارگذاری مدل...</div>
             </Html>
           }
         >
-          <CakeModel candlesOn={candlesOn} />
-          <Smoke />
-        </Suspense>
-        <OrbitControls />
+          <CakeModel
+            candlesOn={candlesOn}
+            modelRef={modelRef}
+            flameRefs={flameRefs}
+          />
+          <Smoke active={smokeActive} />
+        </React.Suspense>
+
+        <OrbitControls enableZoom={false} />
       </Canvas>
     </div>
   );
