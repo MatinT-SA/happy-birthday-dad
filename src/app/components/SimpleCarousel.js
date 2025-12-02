@@ -1,59 +1,63 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function SimpleCarousel({ slides, startAutoSlide }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const IMAGES = [
+  "/assets/images/1.jpg",
+  "/assets/images/2.jpg",
+  "/assets/images/3.jpg",
+  "/assets/images/4.jpg",
+];
 
-  // Automatic slide change after music starts
+export default function SimpleCarousel({ musicRef }) {
+  const [index, setIndex] = useState(0);
+  const [autoplay, setAutoplay] = useState(false);
+
+  // When music starts playing -> enable autoplay
   useEffect(() => {
-    if (!startAutoSlide) return;
+    if (!musicRef?.current) return;
+
+    const handler = () => setAutoplay(true);
+    musicRef.current.addEventListener("play", handler);
+
+    return () => {
+      musicRef.current.removeEventListener("play", handler);
+    };
+  }, [musicRef]);
+
+  // Autoplay handler
+  useEffect(() => {
+    if (!autoplay) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // change every 5 seconds
+      setIndex((prev) => (prev + 1) % IMAGES.length);
+    }, 5000); // 5 seconds
 
     return () => clearInterval(interval);
-  }, [startAutoSlide, slides.length]);
+  }, [autoplay]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () =>
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  const next = () => setIndex((i) => (i + 1) % IMAGES.length);
+  const prev = () => setIndex((i) => (i - 1 + IMAGES.length) % IMAGES.length);
 
   return (
-    <div className="w-full max-w-lg mx-auto p-4 md:p-8 bg-gray-800/80 rounded-2xl shadow-2xl overflow-hidden relative">
-      <div
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-      >
-        {slides.map((slide) => (
-          <div
-            key={slide.id}
-            className={`flex-shrink-0 w-full h-64 flex items-center justify-center rounded-xl ${slide.bg}`}
-          >
-            <span className="text-white text-xl">{slide.content}</span>
-          </div>
-        ))}
-      </div>
+    <div className="relative w-full max-w-2xl mx-auto">
+      <img src={IMAGES[index]} className="w-full rounded-xl shadow-lg" />
 
-      {/* Arrows are positioned relative to this carousel only */}
-      {slides.length > 1 && (
-        <>
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/60 p-3 rounded-full hover:bg-black/90 transition z-10"
-          >
-            <ChevronLeft className="w-6 h-6 text-yellow-400" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/60 p-3 rounded-full hover:bg-black/90 transition z-10"
-          >
-            <ChevronRight className="w-6 h-6 text-yellow-400" />
-          </button>
-        </>
-      )}
+      {/* Left arrow */}
+      <button
+        onClick={prev}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full"
+      >
+        ◀
+      </button>
+
+      {/* Right arrow */}
+      <button
+        onClick={next}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full"
+      >
+        ▶
+      </button>
     </div>
   );
 }
