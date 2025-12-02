@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 
 const IMAGES = [
-  "/assets/images/1.jpg",
-  "/assets/images/2.jpg",
-  "/assets/images/3.jpg",
-  "/assets/images/4.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/3.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/1.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg",
 ];
 
 export default function SimpleCarousel({ musicRef }) {
