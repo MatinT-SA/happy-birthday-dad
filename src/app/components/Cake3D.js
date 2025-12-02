@@ -1,65 +1,9 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Html } from "@react-three/drei";
-import * as THREE from "three";
-
-// -------------------------------
-// Cake Model Component
-// -------------------------------
-function CakeModel({ candlesOn, modelRef, flameRefs }) {
-  const { scene } = useGLTF("/models/cake.glb");
-
-  useFrame(() => {
-    if (modelRef.current) {
-      modelRef.current.rotation.y += 0.0035;
-    }
-  });
-
-  useEffect(() => {
-    scene.scale.set(60, 60, 60);
-    scene.position.set(0, -1, 0);
-    scene.rotation.x = 0.3;
-  }, [scene]);
-
-  useEffect(() => {
-    const flames = [];
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        const name = (child.name || "").toLowerCase();
-        if (name.includes("fire") || name.includes("flame")) {
-          flames.push(child);
-        }
-      }
-    });
-
-    flameRefs.current = flames;
-    console.log(
-      "Detected flames:",
-      flames.map((f) => f.name)
-    );
-
-    flames.forEach((m) => {
-      console.log("Setting flame visible:", m.name);
-      m.visible = true;
-      if (m.material) {
-        m.material.opacity = 1;
-        m.material.transparent = false;
-      }
-    });
-  }, [scene]);
-
-  useEffect(() => {
-    const flames = flameRefs.current || [];
-    console.log("candlesOn changed:", candlesOn, "Setting flames visibility");
-    flames.forEach((m) => {
-      m.visible = candlesOn;
-    });
-  }, [candlesOn]);
-
-  return <primitive ref={modelRef} object={scene} />;
-}
+import { Html, OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import React, { useEffect, useRef, useState } from "react";
+import CakeModel from "./CakeModel";
 
 // -------------------------------
 // MAIN COMPONENT
@@ -77,9 +21,12 @@ export default function Cake3D() {
 
   console.log("Initial candlesOn:", candlesOn);
 
+  // -------------------------------
+  // Microphone Blow Detection
+  // -------------------------------
   useEffect(() => {
-    const threshold = 0.04; // sensitivity
-    const framesNeeded = 3; // consecutive frames required to detect blow
+    const threshold = 0.04; // sensitivity for a strong blow
+    const framesNeeded = 3; // consecutive frames to detect sustained blow
     let blowFrames = 0;
     let lastTrigger = 0;
 
@@ -103,7 +50,7 @@ export default function Cake3D() {
 
         const data = new Float32Array(analyser.fftSize);
 
-        // delay detection 1 sec to avoid first-load noises
+        // Delay detection 1 sec to avoid first-load noises
         setTimeout(() => {
           const tick = () => {
             analyser.getFloatTimeDomainData(data);
@@ -112,7 +59,6 @@ export default function Cake3D() {
             const rms = Math.sqrt(sum / data.length);
             const now = Date.now();
 
-            // Only count sustained sound as blow
             if (rms > threshold) {
               blowFrames++;
             } else {
@@ -155,6 +101,9 @@ export default function Cake3D() {
     };
   }, []);
 
+  // -------------------------------
+  // Render
+  // -------------------------------
   return (
     <div className="w-full h-[520px]">
       <Canvas camera={{ position: [0, 2, 6], fov: 45 }}>
