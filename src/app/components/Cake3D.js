@@ -1,42 +1,40 @@
 "use client";
 
-import { Html, OrbitControls } from "@react-three/drei";
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import React, { useEffect, useRef, useState } from "react";
+import { OrbitControls, Html } from "@react-three/drei";
 import CakeModel from "./CakeModel";
 
-// -------------------------------
-// MAIN COMPONENT
-// -------------------------------
-export default function Cake3D() {
+export default function Cake3D({ nextSectionRef }) {
   const [candlesOn, setCandlesOn] = useState(true);
 
   const modelRef = useRef(null);
   const flameRefs = useRef([]);
+  const musicRef = useRef(null);
 
   const audioCtxRef = useRef(null);
   const analyserRef = useRef(null);
   const streamRef = useRef(null);
   const rafRef = useRef(null);
 
-  console.log("Initial candlesOn:", candlesOn);
-
-  // -------------------------------
-  // Microphone Blow Detection
-  // -------------------------------
+  // ---------------------------
+  // Handle blow detection
+  // ---------------------------
   useEffect(() => {
-    const threshold = 0.04; // sensitivity for a strong blow
-    const framesNeeded = 3; // consecutive frames to detect sustained blow
+    const threshold = 0.04;
+    const framesNeeded = 3;
     let blowFrames = 0;
     let lastTrigger = 0;
 
     const enableMic = async () => {
       try {
+        // 1️⃣ Get mic
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
         streamRef.current = stream;
 
+        // 2️⃣ AudioContext for analyser
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
         audioCtxRef.current = audioCtx;
@@ -50,7 +48,6 @@ export default function Cake3D() {
 
         const data = new Float32Array(analyser.fftSize);
 
-        // Delay detection 1 sec to avoid first-load noises
         setTimeout(() => {
           const tick = () => {
             analyser.getFloatTimeDomainData(data);
@@ -59,11 +56,8 @@ export default function Cake3D() {
             const rms = Math.sqrt(sum / data.length);
             const now = Date.now();
 
-            if (rms > threshold) {
-              blowFrames++;
-            } else {
-              blowFrames = 0;
-            }
+            if (rms > threshold) blowFrames++;
+            else blowFrames = 0;
 
             if (
               blowFrames >= framesNeeded &&
@@ -74,6 +68,35 @@ export default function Cake3D() {
               console.log("Blow detected! Turning off candles");
               setCandlesOn(false);
               blowFrames = 0;
+
+              // ✅ Play music (after first user interaction unlocked)
+              if (musicRef.current) {
+                const playPromise = musicRef.current.play();
+                if (playPromise !== undefined) {
+                  playPromise.catch((err) => {
+                    console.warn(
+                      "Music blocked by browser, try first interaction",
+                      err
+                    );
+                  });
+                }
+              }
+
+              // ✅ Stop mic
+              if (rafRef.current) cancelAnimationFrame(rafRef.current);
+              if (streamRef.current) {
+                streamRef.current.getTracks().forEach((t) => t.stop());
+                streamRef.current = null;
+              }
+              if (audioCtxRef.current) {
+                audioCtxRef.current.close().catch(() => {});
+                audioCtxRef.current = null;
+              }
+
+              // ✅ Scroll to next section
+              if (nextSectionRef?.current) {
+                nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
+              }
             }
 
             rafRef.current = requestAnimationFrame(tick);
@@ -89,6 +112,7 @@ export default function Cake3D() {
     enableMic();
 
     return () => {
+      // Cleanup on unmount
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
@@ -99,13 +123,10 @@ export default function Cake3D() {
         audioCtxRef.current = null;
       }
     };
-  }, []);
+  }, [candlesOn, nextSectionRef]);
 
-  // -------------------------------
-  // Render
-  // -------------------------------
   return (
-    <div className="w-full h-[520px]">
+    <div className="w-full h-[520px] relative">
       <Canvas camera={{ position: [0, 2, 6], fov: 45 }}>
         <ambientLight intensity={1.2} />
         <directionalLight intensity={1.8} position={[3, 6, 3]} />
@@ -126,6 +147,9 @@ export default function Cake3D() {
 
         <OrbitControls enableZoom={false} />
       </Canvas>
+
+      {/* Hidden audio */}
+      <audio ref={musicRef} src="/assets/audio/cher.mp3" preload="auto" />
     </div>
   );
 }

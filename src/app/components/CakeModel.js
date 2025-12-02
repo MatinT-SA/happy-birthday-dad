@@ -32,13 +32,8 @@ export default function CakeModel({ candlesOn, modelRef, flameRefs }) {
     });
 
     flameRefs.current = flames;
-    console.log(
-      "Detected flames:",
-      flames.map((f) => f.name)
-    );
 
     flames.forEach((m) => {
-      console.log("Setting flame visible:", m.name);
       m.visible = true;
       if (m.material) {
         m.material.opacity = 1;
@@ -49,7 +44,6 @@ export default function CakeModel({ candlesOn, modelRef, flameRefs }) {
 
   useEffect(() => {
     const flames = flameRefs.current || [];
-    console.log("candlesOn changed:", candlesOn, "Setting flames visibility");
     flames.forEach((m) => {
       m.visible = candlesOn;
     });
