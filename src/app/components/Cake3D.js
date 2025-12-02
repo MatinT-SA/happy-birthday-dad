@@ -37,18 +37,30 @@ function CakeModel({ candlesOn, modelRef, flameRefs }) {
     });
 
     flameRefs.current = flames;
-    flames.forEach((m) => (m.visible = candlesOn));
 
     console.log(
-      "🔥 Flames detected:",
+      "Detected flames:",
       flames.map((f) => f.name)
     );
+
+    // Force visibility initially and fix potential material issues
+    flames.forEach((m) => {
+      console.log("Setting flame visible:", m.name);
+      m.visible = true;
+      if (m.material) {
+        m.material.opacity = 1;
+        m.material.transparent = false;
+      }
+    });
   }, [scene]);
 
   // Update visibility on candlesOn changes
   useEffect(() => {
     const flames = flameRefs.current || [];
-    flames.forEach((m) => (m.visible = candlesOn));
+    console.log("candlesOn changed:", candlesOn, "Setting flames visibility");
+    flames.forEach((m) => {
+      m.visible = candlesOn;
+    });
   }, [candlesOn]);
 
   return <primitive ref={modelRef} object={scene} />;
@@ -114,6 +126,8 @@ export default function Cake3D() {
   const streamRef = useRef(null);
   const rafRef = useRef(null);
 
+  console.log("Initial candlesOn:", candlesOn);
+
   // -------------------------------
   // Microphone Blow Detection
   // -------------------------------
@@ -121,7 +135,8 @@ export default function Cake3D() {
     const threshold = 0.02; // sensitivity
     let lastTrigger = 0;
 
-    async function enableMic() {
+    // inside useEffect for microphone
+    const enableMic = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
@@ -140,31 +155,36 @@ export default function Cake3D() {
         src.connect(analyser);
 
         const data = new Float32Array(analyser.fftSize);
+        let lastTrigger = 0;
 
-        const tick = () => {
-          analyser.getFloatTimeDomainData(data);
-          let sum = 0;
-          for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
-          const rms = Math.sqrt(sum / data.length);
-          const now = Date.now();
+        // 🔹 Wait 1 second before starting detection
+        setTimeout(() => {
+          const tick = () => {
+            analyser.getFloatTimeDomainData(data);
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+            const rms = Math.sqrt(sum / data.length);
+            const now = Date.now();
 
-          if (rms > threshold && now - lastTrigger > 700 && candlesOn) {
-            lastTrigger = now;
-            setCandlesOn(false); // turn off flames
-            setSmokeActive(true); // show smoke
-            setTimeout(() => setSmokeActive(false), 2500);
-          }
+            if (rms > 0.02 && now - lastTrigger > 700 && candlesOn) {
+              lastTrigger = now;
+              console.log("Blow detected! Turning off candles");
+              setCandlesOn(false);
+              setSmokeActive(true);
+              setTimeout(() => setSmokeActive(false), 2500);
+            }
+
+            rafRef.current = requestAnimationFrame(tick);
+          };
 
           rafRef.current = requestAnimationFrame(tick);
-        };
-
-        rafRef.current = requestAnimationFrame(tick);
+        }, 1000); // 1 second delay
       } catch (e) {
         console.warn("Microphone error:", e);
       }
-    }
+    };
 
-    if (candlesOn) enableMic();
+    enableMic();
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -177,7 +197,7 @@ export default function Cake3D() {
         audioCtxRef.current = null;
       }
     };
-  }, [candlesOn]);
+  }, []);
 
   // -------------------------------
   // Render
