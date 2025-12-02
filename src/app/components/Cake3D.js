@@ -19,7 +19,8 @@ function CakeModel({ candlesOn, modelRef, flameRefs }) {
 
   useEffect(() => {
     scene.scale.set(60, 60, 60);
-    scene.position.set(0, -1.5, 0);
+    scene.position.set(0, -1, 0);
+    scene.rotation.x = 0.3;
   }, [scene]);
 
   useEffect(() => {
