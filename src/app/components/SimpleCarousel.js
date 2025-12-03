@@ -53,19 +53,34 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
     if (!canPlay) return;
     if (intervalRef.current) return;
 
-    intervalRef.current = setInterval(() => {
-      setIndex((prev) => {
-        if (prev < IMAGES.length - 1) return prev + 1;
+    // Delay first image to match Cake3D confetti + scroll delay
+    const initialDelay = 2500; // match the setTimeout in Cake3D
+    let firstTickDone = false;
 
-        // last slide → scroll to video section
-        if (nextSectionRef?.current)
-          nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
-        clearInterval(intervalRef.current);
-        return prev;
-      });
-    }, 5000);
+    const startSlideshow = () => {
+      intervalRef.current = setInterval(() => {
+        setIndex((prev) => {
+          if (prev < IMAGES.length - 1) return prev + 1;
 
-    return () => clearInterval(intervalRef.current);
+          // last slide → scroll to next section
+          if (nextSectionRef?.current)
+            nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
+
+          clearInterval(intervalRef.current);
+          return prev;
+        });
+      }, 5200);
+    };
+
+    const timer = setTimeout(() => {
+      firstTickDone = true;
+      startSlideshow();
+    }, initialDelay);
+
+    return () => {
+      clearTimeout(timer);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [canPlay, nextSectionRef]);
 
   const next = () =>
