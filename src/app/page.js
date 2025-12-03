@@ -1,28 +1,34 @@
 "use client";
 
+import React, { useRef } from "react";
 import Cake3D from "./components/Cake3D";
 import SimpleCarousel from "./components/SimpleCarousel";
-import { useRef, useState } from "react";
+
+// export const metadata = {
+//   title: "تولدت مبارک بابا",
+//   description: "صفحه ویژه تبریک تولد پدر",
+// };
 
 export default function Home() {
   const nextSectionRef = useRef(null);
+  const videoSectionRef = useRef(null);
   const musicRef = useRef(null);
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      {/* SECTION 1 — Only Cake */}
+    <main className="min-h-screen bg-black text-white font-iransans">
+      {/* SECTION 1 — Cake */}
       <section className="min-h-screen flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl font-bold mb-8">
-          پدر عزیزم، تولد 55 سالگیت مبارک 🎉
+        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center">
+          تولدت مبارک بابا 🎉
         </h1>
 
         <Cake3D nextSectionRef={nextSectionRef} musicRef={musicRef} />
 
-        <p className="mt-6 opacity-70 text-lg">
+        <p className="mt-6 opacity-70 text-lg text-center">
           برای شروع، لطفاً با قدرت سمت کیک فوت کنید... 😜
         </p>
 
-        {/* Hidden audio, Cake3D will control it */}
+        {/* Hidden audio, Cake3D controls */}
         <audio
           ref={musicRef}
           id="birthday-music"
@@ -31,12 +37,34 @@ export default function Home() {
         />
       </section>
 
-      {/* SECTION 2 — Carousel only */}
+      {/* SECTION 2 — Carousel */}
       <section
         ref={nextSectionRef}
-        className="w-full min-h-screen bg-gray-900 flex items-center justify-center"
+        className="w-full min-h-screen bg-gray-900 flex items-center justify-center p-6"
       >
-        <SimpleCarousel musicRef={musicRef} />
+        <SimpleCarousel nextSectionRef={videoSectionRef} />
+      </section>
+
+      {/* SECTION 3 — Video */}
+      <section
+        ref={videoSectionRef}
+        className="w-full min-h-screen bg-gray-800 flex flex-col items-center justify-center p-6"
+      >
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+          سخنی جاودانه از بهترین بابای دنیا
+        </h2>
+
+        <video
+          src="/assets/videos/dad-message.mp4"
+          className="w-full max-w-3xl rounded-xl shadow-lg cursor-pointer"
+          controls
+        >
+          Your browser does not support the video tag.
+        </video>
+
+        <p className="mt-4 text-center text-lg opacity-80">
+          برای پخش، روی ویدیو کلیک کنید
+        </p>
       </section>
     </main>
   );
