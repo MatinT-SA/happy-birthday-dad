@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Cake3D from "./components/Cake3D";
 import SimpleCarousel from "./components/SimpleCarousel";
-
-// export const metadata = {
-//   title: "تولدت مبارک بابا",
-//   description: "صفحه ویژه تبریک تولد پدر",
-// };
 
 export default function Home() {
   const nextSectionRef = useRef(null);
   const videoSectionRef = useRef(null);
   const musicRef = useRef(null);
+
+  // Track whether the candles have been blown
+  const [candlesBlown, setCandlesBlown] = useState(false);
 
   return (
     <main className="min-h-screen bg-black text-white font-iransans">
@@ -22,19 +20,17 @@ export default function Home() {
           تولدت مبارک بابا 🎉
         </h1>
 
-        <Cake3D nextSectionRef={nextSectionRef} musicRef={musicRef} />
+        <Cake3D
+          nextSectionRef={nextSectionRef}
+          musicRef={musicRef}
+          setCandlesBlown={setCandlesBlown}
+        />
 
         <p className="mt-6 opacity-70 text-lg text-center">
           برای شروع، لطفاً با قدرت سمت کیک فوت کنید... 😜
         </p>
 
-        {/* Hidden audio, Cake3D controls */}
-        <audio
-          ref={musicRef}
-          id="birthday-music"
-          src="/assets/audio/cher.mp3"
-          preload="auto"
-        />
+        <audio ref={musicRef} src="/assets/audio/cher.mp3" preload="auto" />
       </section>
 
       {/* SECTION 2 — Carousel */}
@@ -42,7 +38,10 @@ export default function Home() {
         ref={nextSectionRef}
         className="w-full min-h-screen bg-gray-900 flex items-center justify-center p-6"
       >
-        <SimpleCarousel nextSectionRef={videoSectionRef} />
+        <SimpleCarousel
+          nextSectionRef={videoSectionRef}
+          canPlay={candlesBlown} // autoplay starts only after candles blown
+        />
       </section>
 
       {/* SECTION 3 — Video */}

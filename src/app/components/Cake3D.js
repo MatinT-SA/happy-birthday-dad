@@ -6,13 +6,11 @@ import { OrbitControls, Html } from "@react-three/drei";
 import CakeModel from "./CakeModel";
 import confetti from "canvas-confetti";
 
-export default function Cake3D({ nextSectionRef, musicRef }) {
+export default function Cake3D({ nextSectionRef, musicRef, setCandlesBlown }) {
   const [candlesOn, setCandlesOn] = useState(true);
-  const [blown, setBlown] = useState(false); // new state
 
   const modelRef = useRef(null);
   const flameRefs = useRef([]);
-
   const audioCtxRef = useRef(null);
   const analyserRef = useRef(null);
   const streamRef = useRef(null);
@@ -21,11 +19,9 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
   useEffect(() => {
     const threshold = 0.12;
     const framesNeeded = 3;
-
     let blowFrames = 0;
     let lastTrigger = 0;
-
-    const warmUpDuration = 1500; // 1.5 seconds
+    const warmUpDuration = 1500;
     let warmUpEnd = null;
 
     const enableMic = async () => {
@@ -47,19 +43,16 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
         src.connect(analyser);
 
         const data = new Float32Array(analyser.fftSize);
-
-        warmUpEnd = Date.now() + warmUpDuration; // ignore audio until warm-up finishes
+        warmUpEnd = Date.now() + warmUpDuration;
 
         const tick = () => {
           analyser.getFloatTimeDomainData(data);
 
-          // 🔥 IGNORE mic for first 1.5 seconds after page refresh
           if (Date.now() < warmUpEnd) {
             rafRef.current = requestAnimationFrame(tick);
             return;
           }
 
-          // Calculate RMS
           let sum = 0;
           for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
           const rms = Math.sqrt(sum / data.length);
@@ -74,30 +67,24 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
             candlesOn
           ) {
             lastTrigger = now;
-            console.log("Blow detected! Blowing candles...");
 
             // Turn off candles
             setCandlesOn(false);
-            setBlown(true);
 
-            // Confetti
-            confetti({
-              particleCount: 150,
-              spread: 70,
-              origin: { y: 0.6 },
-            });
+            // Show confetti
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-            // Delay, scroll, and play music
+            // Notify parent
+            if (setCandlesBlown) setCandlesBlown(true);
+
+            // Scroll & play music
             setTimeout(() => {
-              if (nextSectionRef?.current) {
+              if (nextSectionRef?.current)
                 nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
-              }
-
-              if (musicRef?.current) {
-                musicRef.current.play().catch((err) => {
-                  console.warn("Music play blocked:", err);
-                });
-              }
+              if (musicRef?.current)
+                musicRef.current
+                  .play()
+                  .catch((err) => console.warn("Music play blocked:", err));
             }, 2500);
           }
 
@@ -123,7 +110,7 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
         audioCtxRef.current = null;
       }
     };
-  }, [candlesOn, nextSectionRef, musicRef]);
+  }, [candlesOn, nextSectionRef, musicRef, setCandlesBlown]);
 
   return (
     <div className="w-full h-[520px] relative">
