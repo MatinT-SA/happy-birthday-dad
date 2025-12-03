@@ -15,7 +15,11 @@ export default function CakeModel({ candlesOn, modelRef, flameRefs }) {
   });
 
   useEffect(() => {
-    scene.scale.set(60, 60, 60);
+    // Adjust scale for mobile
+    const isMobile = window.innerWidth <= 768; // typical mobile breakpoint
+    const scaleValue = isMobile ? 50 : 60; // smaller on mobile
+    scene.scale.set(scaleValue, scaleValue, scaleValue);
+
     scene.position.set(0, -1, 0);
     scene.rotation.x = 0.3;
   }, [scene]);

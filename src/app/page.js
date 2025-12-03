@@ -16,8 +16,8 @@ export default function Home() {
     <main className="min-h-screen bg-black text-white font-iransans">
       {/* SECTION 1 — Cake */}
       <section className="min-h-screen flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center">
-          تولدت مبارک بابا 🎉
+        <h1 className="text-lg md:text-5xl font-bold mb-8 text-center">
+          پدر عزیزم، تولد 55 سالگیت مبارک 🎉
         </h1>
 
         <Cake3D
@@ -27,7 +27,7 @@ export default function Home() {
         />
 
         <p className="mt-6 opacity-70 text-lg text-center">
-          برای شروع، لطفاً با قدرت سمت کیک فوت کنید... 😜
+          با قدرت کیک رو فوت کن 😜
         </p>
 
         <audio ref={musicRef} src="/assets/audio/cher.mp3" preload="auto" />
