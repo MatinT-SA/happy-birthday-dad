@@ -32,7 +32,7 @@ export default function SimpleCarousel({ musicRef }) {
 
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 7000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [autoplay]);
