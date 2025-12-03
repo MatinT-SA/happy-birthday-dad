@@ -55,6 +55,7 @@ export default function Home() {
 
         <video
           src="https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/dad.mp4"
+          preload="auto"
           className="w-full max-w-3xl rounded-xl shadow-lg cursor-pointer"
           controls
         >

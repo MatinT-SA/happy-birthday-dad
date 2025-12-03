@@ -49,20 +49,24 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
   const [index, setIndex] = useState(0);
   const intervalRef = useRef(null);
 
+  // Preload first image immediately
+  useEffect(() => {
+    const img = new Image();
+    img.src = IMAGES[0];
+  }, []);
+
   useEffect(() => {
     if (!canPlay) return;
-    if (intervalRef.current) return;
 
-    // Delay first image to match Cake3D confetti + scroll delay
-    const initialDelay = 2500; // match the setTimeout in Cake3D
-    let firstTickDone = false;
+    // Delay starting interval to sync with candles + confetti
+    const delay = 2500; // match your Cake3D timeout
+    const timer = setTimeout(() => {
+      if (intervalRef.current) return;
 
-    const startSlideshow = () => {
       intervalRef.current = setInterval(() => {
         setIndex((prev) => {
           if (prev < IMAGES.length - 1) return prev + 1;
 
-          // last slide → scroll to next section
           if (nextSectionRef?.current)
             nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -70,12 +74,7 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
           return prev;
         });
       }, 5200);
-    };
-
-    const timer = setTimeout(() => {
-      firstTickDone = true;
-      startSlideshow();
-    }, initialDelay);
+    }, delay);
 
     return () => {
       clearTimeout(timer);
