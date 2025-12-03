@@ -105,13 +105,13 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
 
       <button
         onClick={prev}
-        className="absolute cursor-pointer left-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer left-0 sm:left-3 top-1/2 -translate-y-1/2 bg-black/40 p-2 sm:p-3 rounded-full text-white text-xs sm:text-xl z-10"
       >
         ◀
       </button>
       <button
         onClick={next}
-        className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer right-0 sm:right-3 top-1/2 -translate-y-1/2 bg-black/40 p-2 sm:p-3 rounded-full text-white text-xs sm:text-xl z-10"
       >
         ▶
       </button>
