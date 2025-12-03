@@ -8,55 +8,48 @@ const IMAGES = [
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg",
+  "/assets/images/dad1.jpg",
+  "/assets/images/dad2.jpg",
 ];
 
-export default function SimpleCarousel({ musicRef }) {
+export default function SimpleCarousel({ nextSectionRef }) {
   const [index, setIndex] = useState(0);
-  const [autoplay, setAutoplay] = useState(false);
-
-  // Enable autoplay when music starts
-  useEffect(() => {
-    if (!musicRef?.current) return;
-
-    const handler = () => setAutoplay(true);
-    musicRef.current.addEventListener("play", handler);
-
-    return () => {
-      musicRef.current.removeEventListener("play", handler);
-    };
-  }, [musicRef]);
 
   // Autoplay interval
   useEffect(() => {
-    if (!autoplay) return;
-
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 5000);
+      if (index < IMAGES.length - 1) {
+        setIndex((prev) => prev + 1);
+      } else {
+        // Scroll to next section when last image is reached
+        if (nextSectionRef?.current) {
+          nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        clearInterval(interval);
+      }
+    }, 7000); // 7 seconds per slide
 
     return () => clearInterval(interval);
-  }, [autoplay]);
+  }, [index, nextSectionRef]);
 
-  const next = () => setIndex((i) => (i + 1) % IMAGES.length);
+  const next = () => {
+    if (index < IMAGES.length - 1) setIndex((i) => i + 1);
+  };
   const prev = () => setIndex((i) => (i - 1 + IMAGES.length) % IMAGES.length);
 
   return (
     <div className="relative w-full md:max-w-3xl mx-auto overflow-hidden rounded-xl">
-      {/* FIXED HEIGHT */}
+      {/* Carousel images */}
       <div className="relative w-full h-[420px] md:h-[520px]">
         {IMAGES.map((src, i) => (
           <img
             key={i}
             src={src}
-            className={`
-              absolute inset-0 w-full h-full object-cover rounded-xl
-              transition-all duration-1800 ease-out
-              ${
-                i === index
-                  ? "opacity-100 scale-105 translate-x-0"
-                  : "opacity-0 scale-100 translate-x-3"
-              }
-            `}
+            className={`absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-1800 ease-out ${
+              i === index
+                ? "opacity-100 scale-105 translate-x-0"
+                : "opacity-0 scale-100 translate-x-3"
+            }`}
           />
         ))}
       </div>
