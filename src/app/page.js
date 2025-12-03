@@ -54,7 +54,7 @@ export default function Home() {
         </h2>
 
         <video
-          src="/assets/videos/dad-message.mp4"
+          src="https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/dad.mp4"
           className="w-full max-w-3xl rounded-xl shadow-lg cursor-pointer"
           controls
         >
