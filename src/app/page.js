@@ -12,7 +12,9 @@ export default function Home() {
     <main className="min-h-screen bg-black text-white">
       {/* SECTION 1 — Only Cake */}
       <section className="min-h-screen flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl font-bold mb-8">تولدت مبارک بابا 🎉</h1>
+        <h1 className="text-4xl font-bold mb-8">
+          پدر عزیزم، تولد 55 سالگیت مبارک 🎉
+        </h1>
 
         <Cake3D nextSectionRef={nextSectionRef} musicRef={musicRef} />
 
