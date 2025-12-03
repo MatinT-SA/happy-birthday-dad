@@ -3,11 +3,46 @@
 import { useState, useEffect, useRef } from "react";
 
 const IMAGES = [
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/1.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/3.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105423.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105651.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112129.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105606.jpg",
+  "/assets/images/dad2.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112009.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103922.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110257.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105001.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104857.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104833.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105057.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103847.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/3.jpg?updatedAt=1764707460533",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104109.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110956.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105153.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110002.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104137.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/1.jpg?updatedAt=1764707575883",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg?updatedAt=1764707606439",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105920.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104239.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104223.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104321.jpg",
+  "/assets/images/dad1.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg?updatedAt=1764707545139",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg?updatedAt=1764707492482",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111117.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110935.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111732.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110154.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111716.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135217_348.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135251_976.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135827_255.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135500_195.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20240608_125620.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_134916_238.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_134801_091.jpg",
 ];
 
 export default function SimpleCarousel({ nextSectionRef, canPlay }) {
@@ -45,7 +80,7 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
           <img
             key={i}
             src={src}
-            className={`absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-1800 ease-out ${
+            className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-all duration-1800 ease-out ${
               i === index
                 ? "opacity-100 scale-105 translate-x-0"
                 : "opacity-0 scale-100 translate-x-3"
@@ -56,13 +91,13 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
 
       <button
         onClick={prev}
-        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer left-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
       >
         ◀
       </button>
       <button
         onClick={next}
-        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
       >
         ▶
       </button>

@@ -17,7 +17,7 @@ export default function Cake3D({ nextSectionRef, musicRef, setCandlesBlown }) {
   const rafRef = useRef(null);
 
   useEffect(() => {
-    const threshold = 0.12;
+    const threshold = 0.2;
     const framesNeeded = 3;
     let blowFrames = 0;
     let lastTrigger = 0;
