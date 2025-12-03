@@ -3,11 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 
 const IMAGES = [
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/1.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/3.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105423.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105651.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112129.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105606.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112009.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103922.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104626.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105001.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104857.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103847.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105057.jpg",
+  "/assets/images/dad1.jpg",
+  "/assets/images/dad2.jpg",
 ];
 
 export default function SimpleCarousel({ nextSectionRef, canPlay }) {
@@ -45,7 +53,7 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
           <img
             key={i}
             src={src}
-            className={`absolute inset-0 w-full h-full object-cover rounded-xl transition-all duration-1800 ease-out ${
+            className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-all duration-1800 ease-out ${
               i === index
                 ? "opacity-100 scale-105 translate-x-0"
                 : "opacity-0 scale-100 translate-x-3"
@@ -56,13 +64,13 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
 
       <button
         onClick={prev}
-        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer left-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
       >
         ◀
       </button>
       <button
         onClick={next}
-        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
+        className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 bg-black/40 p-3 rounded-full text-white text-xl z-10"
       >
         ▶
       </button>
