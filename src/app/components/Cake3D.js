@@ -19,10 +19,14 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
   const rafRef = useRef(null);
 
   useEffect(() => {
-    const threshold = 0.04;
+    const threshold = 0.12;
     const framesNeeded = 3;
+
     let blowFrames = 0;
     let lastTrigger = 0;
+
+    const warmUpDuration = 1500; // 1.5 seconds
+    let warmUpEnd = null;
 
     const enableMic = async () => {
       try {
@@ -44,8 +48,18 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
 
         const data = new Float32Array(analyser.fftSize);
 
+        warmUpEnd = Date.now() + warmUpDuration; // ignore audio until warm-up finishes
+
         const tick = () => {
           analyser.getFloatTimeDomainData(data);
+
+          // 🔥 IGNORE mic for first 1.5 seconds after page refresh
+          if (Date.now() < warmUpEnd) {
+            rafRef.current = requestAnimationFrame(tick);
+            return;
+          }
+
+          // Calculate RMS
           let sum = 0;
           for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
           const rms = Math.sqrt(sum / data.length);
@@ -62,31 +76,29 @@ export default function Cake3D({ nextSectionRef, musicRef }) {
             lastTrigger = now;
             console.log("Blow detected! Blowing candles...");
 
-            // 1️⃣ Turn off candles visually
+            // Turn off candles
             setCandlesOn(false);
-            setBlown(true); // trigger confetti
+            setBlown(true);
 
-            // 2️⃣ Trigger confetti
+            // Confetti
             confetti({
               particleCount: 150,
               spread: 70,
               origin: { y: 0.6 },
             });
 
-            // 3️⃣ Wait a few seconds before scrolling & music
+            // Delay, scroll, and play music
             setTimeout(() => {
-              // Scroll to next section
               if (nextSectionRef?.current) {
                 nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
               }
 
-              // Play music after scrolling
               if (musicRef?.current) {
                 musicRef.current.play().catch((err) => {
                   console.warn("Music play blocked:", err);
                 });
               }
-            }, 2500); // 2.5 seconds delay
+            }, 2500);
           }
 
           rafRef.current = requestAnimationFrame(tick);
