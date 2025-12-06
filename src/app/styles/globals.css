@@ -35,3 +35,8 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+.blur-public {
+  filter: blur(10px);
+  pointer-events: none;
+}
