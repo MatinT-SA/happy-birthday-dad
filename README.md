@@ -1,4 +1,4 @@
-<img width="1903" height="919" alt="image" src="https://github.com/user-attachments/assets/6ef45e15-d561-4100-801f-78c0a42abaad" /># happy-birthday-dad
+# happy-birthday-dad
 
 A personalized birthday website with a rotating 3D cake, animations, and a nostalgic photo slider.
 
