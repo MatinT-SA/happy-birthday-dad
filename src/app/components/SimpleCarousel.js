@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const IMAGES_BLURRED = [
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-70/happy%20birthday%20dad/20251203_105423.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-70/happy%20birthday%20dad/20251203_105651.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-70/happy%20birthday%20dad/20251203_112129.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-90/happy%20birthday%20dad/20251203_105606.jpg",
+const IMAGES = [
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105423.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105651.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112129.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105606.jpg",
   "https://res.cloudinary.com/dsdhn5hqc/image/upload/v1765099585/dad2_uadbuz.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-90/happy%20birthday%20dad/20251203_112009.jpg",
+  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112009.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103922.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110257.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105001.jpg",
@@ -45,97 +45,46 @@ const IMAGES_BLURRED = [
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_134801_091.jpg",
 ];
 
-const IMAGES_REAL = [
-  "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-80/happy%20birthday%20dad/20251203_105423.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105651.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112129.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105606.jpg",
-  "/assets/images/dad2.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_112009.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103922.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110257.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105001.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104857.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104833.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105057.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103847.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/3.jpg?updatedAt=1764707460533",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104109.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110956.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105153.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110002.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104137.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/1.jpg?updatedAt=1764707575883",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/2.jpg?updatedAt=1764707606439",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_105920.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104239.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104223.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104321.jpg",
-  "/assets/images/dad1.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg?updatedAt=1764707545139",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg?updatedAt=1764707492482",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111117.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110935.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111732.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110154.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111716.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135217_348.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135251_976.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135827_255.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_135500_195.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20240608_125620.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_134916_238.jpg",
-  "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/IMG_20251203_134801_091.jpg",
-];
-
 export default function SimpleCarousel({ nextSectionRef, canPlay }) {
   const [index, setIndex] = useState(0);
   const intervalRef = useRef(null);
 
-  // Determine if this user is your dad using secret key
   const [isDad, setIsDad] = useState(false);
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const secretKey = urlParams.get("secret");
-    const DAD_SECRET = process.env.NEXT_PUBLIC_DAD_SECRET || "YOUR_SECRET";
+    const DAD_SECRET = process.env.NEXT_PUBLIC_DAD_SECRET || "arash";
     setIsDad(secretKey === DAD_SECRET);
   }, []);
 
-  const IMAGES = isDad ? IMAGES_REAL : IMAGES_BLURRED;
-
-  // Preload first image immediately
+  // Preload first image
   useEffect(() => {
     const img = new Image();
     img.src = IMAGES[0];
-  }, [IMAGES]);
+  }, []);
 
+  // Automatic carousel rotation
   useEffect(() => {
     if (!canPlay) return;
-
-    // Delay starting interval to sync with candles + confetti
-    const delay = 2500; // match your Cake3D timeout
+    const delay = 2500;
     const timer = setTimeout(() => {
       if (intervalRef.current) return;
-
       intervalRef.current = setInterval(() => {
         setIndex((prev) => {
           if (prev < IMAGES.length - 1) return prev + 1;
-
           if (nextSectionRef?.current)
             nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
-
           clearInterval(intervalRef.current);
           return prev;
         });
-      }, 7000); // 7 seconds per image
+      }, 7000);
     }, delay);
 
     return () => {
       clearTimeout(timer);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [canPlay, nextSectionRef, IMAGES]);
+  }, [canPlay, nextSectionRef]);
 
   const next = () =>
     setIndex((prev) => (prev + 1 < IMAGES.length ? prev + 1 : prev));
@@ -153,13 +102,12 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
               i === index
                 ? "opacity-100 scale-105 translate-x-0"
                 : "opacity-0 scale-100 translate-x-3"
-            }
-            ${!isDad ? "blur-public" : ""}
-            `}
+            } ${!isDad ? "blur-public" : ""}`}
           />
         ))}
       </div>
 
+      {/* Navigation buttons */}
       <button
         onClick={prev}
         className="absolute cursor-pointer left-0 sm:left-3 top-1/2 -translate-y-1/2 bg-black/40 p-2 sm:p-3 rounded-full text-white text-xs sm:text-xl z-10"
