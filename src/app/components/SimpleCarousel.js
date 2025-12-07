@@ -7,7 +7,7 @@ const IMAGES_BLURRED = [
   "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-70/happy%20birthday%20dad/20251203_105651.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-70/happy%20birthday%20dad/20251203_112129.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-90/happy%20birthday%20dad/20251203_105606.jpg",
-  "/assets/images/dad2.jpg",
+  "https://res.cloudinary.com/dsdhn5hqc/image/upload/v1765099585/dad2_uadbuz.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/tr:bl-90/happy%20birthday%20dad/20251203_112009.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_103922.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_110257.jpg",
@@ -28,7 +28,7 @@ const IMAGES_BLURRED = [
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104239.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104223.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_104321.jpg",
-  "/assets/images/dad1.jpg",
+  "https://res.cloudinary.com/dsdhn5hqc/image/upload/v1765099576/dad1_gnv1r5.jpg",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/5.jpg?updatedAt=1764707545139",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/4.jpg?updatedAt=1764707492482",
   "https://ik.imagekit.io/7qvdh2mdgk/happy%20birthday%20dad/20251203_111117.jpg",
@@ -154,7 +154,7 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
                 ? "opacity-100 scale-105 translate-x-0"
                 : "opacity-0 scale-100 translate-x-3"
             }
-            ${!isDad && src.includes("/assets/images/") ? "blur-public" : ""}
+            ${!isDad ? "blur-public" : ""}
             `}
           />
         ))}
