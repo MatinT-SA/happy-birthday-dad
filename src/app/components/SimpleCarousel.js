@@ -49,35 +49,31 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
   const [index, setIndex] = useState(0);
   const intervalRef = useRef(null);
 
-  const [isDad, setIsDad] = useState(false);
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const secretKey = urlParams.get("secret");
-    const DAD_SECRET = process.env.NEXT_PUBLIC_DAD_SECRET || "arash";
-    setIsDad(secretKey === DAD_SECRET);
-  }, []);
-
-  // Preload first image
+  // Preload first image immediately
   useEffect(() => {
     const img = new Image();
     img.src = IMAGES[0];
   }, []);
 
-  // Automatic carousel rotation
   useEffect(() => {
     if (!canPlay) return;
-    const delay = 2500;
+
+    // Delay starting interval to sync with candles + confetti
+    const delay = 2500; // match your Cake3D timeout
     const timer = setTimeout(() => {
       if (intervalRef.current) return;
+
       intervalRef.current = setInterval(() => {
         setIndex((prev) => {
           if (prev < IMAGES.length - 1) return prev + 1;
+
           if (nextSectionRef?.current)
             nextSectionRef.current.scrollIntoView({ behavior: "smooth" });
+
           clearInterval(intervalRef.current);
           return prev;
         });
-      }, 7000);
+      }, 5200);
     }, delay);
 
     return () => {
@@ -102,12 +98,11 @@ export default function SimpleCarousel({ nextSectionRef, canPlay }) {
               i === index
                 ? "opacity-100 scale-105 translate-x-0"
                 : "opacity-0 scale-100 translate-x-3"
-            } ${!isDad ? "blur-public" : ""}`}
+            }`}
           />
         ))}
       </div>
 
-      {/* Navigation buttons */}
       <button
         onClick={prev}
         className="absolute cursor-pointer left-0 sm:left-3 top-1/2 -translate-y-1/2 bg-black/40 p-2 sm:p-3 rounded-full text-white text-xs sm:text-xl z-10"
